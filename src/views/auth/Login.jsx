@@ -1,5 +1,7 @@
 import { useState } from 'react';
+// import { useLoaderData } from "react-router";
 import { useNavigate } from 'react-router';
+import { loginLoader } from '../../utils/axiosController';
 import axiosInstance from '../../axiosInstance';
 
 import {
@@ -9,13 +11,13 @@ import {
 import { blue } from '@mui/material/colors';
 
 const Login = () => {
-  // const { setUser, setToken } = useAuthContext()
+  // let data = useLoaderData();
   let navegate = useNavigate();
   const initialFormData = Object.freeze({
     email: '',
     password: '',
   });
-
+// console.log('  ----  useLoaderData(): ', data)
   const [formData, updateFormData] = useState(initialFormData);
 
   const handleChange = (e) => {
@@ -27,15 +29,19 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // console.log(formData);
+
+    let rr
+    // rr = loginLoader(formData)
+    // console.log('  ---- rr ', rr)
 
     axiosInstance
       .post(`user/login/`, {
+      // .post(`user/register/`, {
         email: formData.email,
         password: formData.password,
       })
       .then((res) => {
-        console.log('===== Login -- res.data', res.data );
+        console.log('===== Login -- res.data', res.data);
         console.log('===== Login -- res.data.tokens', res.data.tokens);
         console.log('===== Login -- res.data.tokens', res.data.tokens.access);
         console.log('===== Login -- res.data.tokens', res.data.tokens.refresh);
@@ -47,7 +53,7 @@ const Login = () => {
         axiosInstance.defaults.headers['Authorization'] =
           'JWT ' + localStorage.getItem('access_token');
 
-          // blogauthor
+        // blogauthor
         navegate(`/dashboard/`)
       });
   };

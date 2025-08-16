@@ -1,10 +1,14 @@
-import React, { useState } from 'react'
-import { createBrowserRouter, useNavigate, } from "react-router";
+import { useState } from 'react'
+import { createBrowserRouter, useNavigate } from "react-router";
+import axiosInstance from './axiosInstance';
+import { userLoader, loginLoader, logoutLoader } from './utils/axiosController';
 // =============== ADMIN ===================
 import DashboardLayout from './layouts/DashboardLayout';
 import Dashboard from './views/Dashboard';
 import Logout from './views/auth/Logout';
-import Media from './views/admin/Media'
+import InfoUsr_1 from './views/admin/InfoUsr_1'
+import InfoUsr_2 from './views/admin/InfoUsr_2';
+import InfoUsr_3 from './views/admin/InfoUsr_3';
 // ==================================
 import GuesstLayout from './layouts/GuesstLayout';
 import Home from './views/Home'
@@ -14,10 +18,9 @@ import Signup from './views/auth/Signup';
 import NotFound from './views/NotFound';
 
 
+// https://reactrouter.com/how-to/client-data
 
-// https://reactrouter.com/6.30.1/start/tutorial
-// https://reactrouter.com/tutorials/address-book
-const router_x = createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: "/",
     // Component: GuesstLayout, // oks
@@ -36,27 +39,48 @@ const router_x = createBrowserRouter([
         path: "/home",
         element: <Home />,
       },
+      {
+        path: "/about",
+        element: <About />,
+      },
     ],
   },
 
   {
     path: "/dashboard",
-    element: <Dashboard />,
+    element: <DashboardLayout />,
     errorElement: <NotFound />,
     children: [
       {
         path: "logout",
+        loader: logoutLoader,
         element: <Logout />,
       },
       {
-        path: "media",
-        element: <Media />,
+        path: "a/:username",
+        element: <InfoUsr_1 />,
+      },
+      {
+        path: "b/",
+        loader: async () => {
+          const response = await axiosInstance.get(`user/user/`);
+          // console.log('  ----  response : ', response)
+          // y en InfoUsr_2 se recuperan los datos useLoaderData()
+          return response.data;
+        },
+        element: <InfoUsr_2 />,
+      },
+      {
+        path: "c/",
+        loader: userLoader,
+        element: <InfoUsr_3 />,
       },
     ],
   },
 ]);
 
-const router = createBrowserRouter([
+// ===============================================
+const router_ccc = createBrowserRouter([
   {
     path: "/",
     Component: GuesstLayout,
@@ -75,51 +99,12 @@ const router = createBrowserRouter([
     children: [
       { index: true, Component: Dashboard },
       { path: "logout", Component: Logout },
-      { path: "media", Component: Media },
+      { path: "infousr_1", Component: InfoUsr_1 },
     ],
   },
   {
     path: "/",
     element: <NotFound />,
-  },
-]);
-
-const router_p = createBrowserRouter([
-  {
-    path: "/",
-    Component: GuesstLayout,
-    children: [
-      { index: true, Component: Home },
-      { path: "about", Component: About },
-      { path: "login", Component: Login },
-      { path: "signup", Component: Signup },
-      // {
-      //   path: "auth",
-      //   Component: AuthLayout,
-      //   children: [
-      //     { path: "login", Component: Login },
-      //     { path: "signup", Component: Signup },
-      //   ],
-      // },
-      {
-        path: "/dashboard",
-        //Component: Dashboard,
-        children: [
-          { index: true, Component: Dashboard },
-          { path: "logout", Component: Logout },
-          { path: "media", Component: Media },
-        ],
-      },
-      // {
-      //   path: "concerts",
-      //   children: [
-      //     { index: true, Component: ConcertsHome },
-      //     { path: ":city", Component: ConcertsCity },
-      //     { path: "trending", Component: ConcertsTrending },
-      //   ],
-      // },
-    ],
-
   },
 ]);
 

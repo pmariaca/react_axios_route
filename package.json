@@ -1,7 +1,14 @@
 {
   "name": "react_axios_route",
-  "private": true,
   "version": "0.0.0",
+  "description": "axios + router + comunicacion rest_framework_simplejwt",
+  "keywords": [
+    "React",
+    "axios",
+    "react-router",
+    "JWT"
+  ],
+  "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000",
