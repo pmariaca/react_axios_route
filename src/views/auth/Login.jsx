@@ -1,23 +1,27 @@
-import { useState } from 'react';
-// import { useLoaderData } from "react-router";
-import { useNavigate } from 'react-router';
-import { loginLoader } from '../../utils/axiosController';
-import axiosInstance from '../../axiosInstance';
-
+import { useState, useEffect } from 'react';
+import { useNavigate, useFetcher, Form } from 'react-router';
 import {
   Avatar, Button, CssBaseline, TextField, FormControlLabel,
-  Checkbox, Link, Grid, Typography, Container
+  Checkbox, Link, Grid, Typography, Container, Alert
 } from '@mui/material';
 import { blue } from '@mui/material/colors';
 
 const Login = () => {
-  // let data = useLoaderData();
   let navegate = useNavigate();
+  const fetcher = useFetcher()
+  const message = fetcher.data?.message
+  const message2 = fetcher.data?.response?.statusText
+  // console.log(' --Login--- fetcher ---- ', fetcher)
+
+  if (localStorage.getItem('username')) {
+    navegate(`/dashboard/`)
+  }
+
   const initialFormData = Object.freeze({
     email: '',
     password: '',
   });
-// console.log('  ----  useLoaderData(): ', data)
+
   const [formData, updateFormData] = useState(initialFormData);
 
   const handleChange = (e) => {
@@ -27,51 +31,23 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    let rr
-    // rr = loginLoader(formData)
-    // console.log('  ---- rr ', rr)
-
-    axiosInstance
-      .post(`user/login/`, {
-      // .post(`user/register/`, {
-        email: formData.email,
-        password: formData.password,
-      })
-      .then((res) => {
-        console.log('===== Login -- res.data', res.data);
-        console.log('===== Login -- res.data.tokens', res.data.tokens);
-        console.log('===== Login -- res.data.tokens', res.data.tokens.access);
-        console.log('===== Login -- res.data.tokens', res.data.tokens.refresh);
-        // setUser()
-
-        localStorage.setItem('username', res.data.username);
-        localStorage.setItem('access_token', res.data.tokens.access);
-        localStorage.setItem('refresh_token', res.data.tokens.refresh);
-        axiosInstance.defaults.headers['Authorization'] =
-          'JWT ' + localStorage.getItem('access_token');
-
-        // blogauthor
-        navegate(`/dashboard/`)
-      });
-  };
-
   return (
     <>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-        // 		marginTop: theme.spacing(8),
-        >
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} >
           <Avatar sx={{ bgcolor: blue[500] }} />
+          {message &&
+            <Alert severity="info">
+              {message2}😞
+            </Alert>
+          }
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <form style={{ width: '100%' }}
-            // 		marginTop: theme.spacing(1),
-            noValidate>
+          <fetcher.Form method="post"
+          // 		marginTop: theme.spacing(1),
+          >
             <TextField
               variant="outlined"
               margin="normal"
@@ -105,9 +81,6 @@ const Login = () => {
               fullWidth
               variant="contained"
               color="primary"
-              // style={{width:'100%'}}
-              // 		margin: theme.spacing(3, 0, 2),
-              onClick={handleSubmit}
             >
               Sign In
             </Button>
@@ -123,7 +96,7 @@ const Login = () => {
                 </Link>
               </Grid>
             </Grid>
-          </form>
+          </fetcher.Form>
         </div>
       </Container>
     </>

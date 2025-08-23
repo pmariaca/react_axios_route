@@ -1,4 +1,6 @@
 import axiosInstance from '../axiosInstance'
+// basicamente loader es para get 
+// y action para submit forma o POST/PUT/DELETE request
 
 // Axios instances, created using axios.create(), inherently support 
 // asynchronous operations, particularly when used with async/await syntax.
@@ -10,7 +12,10 @@ export async function userLoader() {
   // console.log('  ----  response : ', response)
   return response.data;
 }
-export async function logoutLoader() {
+
+// https://github.com/aaronksaunders/react-router-v7-auth-app-1/blob/main/app/routes/home.tsx
+// si es post usar action
+export async function logoutAction() {
   const response = await axiosInstance.post('user/logout/', {
     refresh_token: localStorage.getItem('refresh_token'),
   })
@@ -25,38 +30,26 @@ export async function logoutLoader() {
   return response;
 }
 
-export async function loginLoader(formData) {
-  console.log('===== Login formData', formData);
-  try {
-    const response = await axiosInstance
-      .post(`user/login/`, {
-        email: formData.email,
-        password: formData.password,
-      })
-      .then((res) => {
-        // console.log('===== Login -- res.data', res.data);
-        // console.log('===== Login -- res.data.tokens', res.data.tokens);
-
-        localStorage.setItem('username', res.data.username);
-        localStorage.setItem('access_token', res.data.tokens.access);
-        localStorage.setItem('refresh_token', res.data.tokens.refresh);
-        axiosInstance.defaults.headers['Authorization'] =
-          'JWT ' + localStorage.getItem('access_token');
-        return response.data;
-      })
-  } catch (error) {
+export async function loginAction({ request }) {
+  const data = await request.formData()
+  const submission = {
+    email: data.get("email"),
+    password: data.get("password"),
   }
-}
+  // console.log(' ----- data ---- ', data)
+  const response = await axiosInstance.post(`user/login/`, submission)
+    .then((res) => {
+      // console.log('===== loginAction -- res.data', res.data);
+      localStorage.setItem('username', res.data.username);
+      localStorage.setItem('access_token', res.data.tokens.access);
+      localStorage.setItem('refresh_token', res.data.tokens.refresh);
+      axiosInstance.defaults.headers['Authorization'] =
+        'JWT ' + localStorage.getItem('access_token');
 
-
-// export async function myDataLoader({ params }) {
-//   try {
-//     // Example: Fetching a user by ID from route parameters
-//     const response = await axios.get(`/api/users/${params.userId}`);
-//     return json(response.data); // Return data wrapped in json helper for proper serialization
-//   } catch (error) {
-//     console.error("Error fetching data:", error);
-//     // Handle errors, e.g., return a specific error status or message
-//     return json({ message: "Failed to load data" }, { status: 500 });
-//   }
-// }
+        return res.data;
+    })
+    .catch(err => {
+      return err
+    })
+  return response;
+};

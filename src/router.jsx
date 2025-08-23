@@ -1,7 +1,6 @@
-import { useState } from 'react'
-import { createBrowserRouter, useNavigate } from "react-router";
+import { createBrowserRouter } from "react-router";
 import axiosInstance from './axiosInstance';
-import { userLoader, loginLoader, logoutLoader } from './utils/axiosController';
+import { userLoader, loginAction, logoutAction } from './utils/axiosController';
 // =============== ADMIN ===================
 import DashboardLayout from './layouts/DashboardLayout';
 import Dashboard from './views/Dashboard';
@@ -28,7 +27,8 @@ const router = createBrowserRouter([
     errorElement: <NotFound />,
     children: [
       {
-        path: "login",
+        path: "login", 
+        action: loginAction,
         element: <Login />,
       },
       {
@@ -53,7 +53,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "logout",
-        loader: logoutLoader,
+        loader: logoutAction ,
         element: <Logout />,
       },
       {

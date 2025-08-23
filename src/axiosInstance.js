@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// lo probe con django_adminPage y www.example.com --  con user/login/ y NO con user/register/
 // prueba con: console.log(' import.meta.env.VITE_SOME_KEY :   ',import.meta.env.VITE_SOME_KEY)
 // VITE_API_BASE_URL='http://localhost:8000/' en dir raiz de la app: .env.local
 const axiosInstance = axios.create({
@@ -56,7 +57,8 @@ const axiosInstance = axios.create({
 //   }
 // );
 
-
+// YA Viiiiii  el PROBLEMA del loop-infinito, es cuando reinicio el servidor y el usuario no ha hecho logout!!!!
+// hay que arreglar eso
 // con refresh_token
 axiosInstance.interceptors.response.use(
 	(response) => {
